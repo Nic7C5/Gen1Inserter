@@ -6,7 +6,7 @@ def check_input(pokemon_eingabe):
         pokemon_name = str(pokemon_eingabe).lower() 
         return pokemon_name;
 def twodigitcheck(string):
-    "Checks wether value only has two digits"
+    "Checks wether value only has two digits"		#this is from my very beginnings as a beginner...
     if string[0:1] == ' ':
         string = string[1:3]
     return string;
@@ -25,43 +25,6 @@ def convert_rgb_values(eingabe):
             liste[i] = int(liste[i])*255/31
     output = tuple(liste)
     return output;	
-#get evolutions and attacks
-def get_attacks(pokemon_name):
-    "get_attacks"
-    m = open('../../pokecrystal/data/evos_attacks.asm', "r")
-    lines = m.readlines()
-    i = 0
-    while i < len(lines):
-        if lines[i].find(pokemon_name.title()+'EvosAttacks:') != -1:
-            #print 'Block of', str(pokemon_name).title(), 'found @ line', str(i+1)
-            #evolutions start in nextline
-            break        
-        i =i+1
-    if lines[i+1].find('db 0 ; no more evolutions') == -1:
-        #Has evolution
-        i = i+3
-    else:
-        #Has no evolution
-        i = i+2
-    attacks=[]
-    j=0
-    while j <=3:
-        next_attack = lines[i+j]
-        if next_attack.find('db 1,') != -1:
-            string = next_attack[7:len(next_attack)-1]
-            print 'Attacks known since level 0:\t' + string
-            attacks.append(string)
-        else:
-            break
-        j = j + 1
-    if str(attacks[-1:]).find('no') != -1:
-        li = len(attacks)-1
-        attacks.pop(li)
-    k = 4 - len(attacks)                
-    while k > 0:
-        attacks.append('0')
-        k = k - 1
-    return attacks;
 def get_evolution(pokemon_name):
     "get_evolution"
     m = open('../../pokecrystal/data/evos_attacks.asm', "r")
@@ -76,13 +39,13 @@ def get_evolution(pokemon_name):
     if lines[i+1].find('db 0 ; no more evolutions') == -1:
         i = i+1
         #print ('Has evolution')
-		has_evolution = True   #tIf true: prompt to either insert the evolution as well or delete the evolutin data
+		has_evolution = True   #tIf true: prompt to either insert the evolution as well or delete the evolutin data...to be programmed
         evol_info_gen2=lines[i].split(', ')
     else:
         #print ('Has no evolution')
         evol_info_gen2 = ['0']
       
-    #convert evolution info
+    #convert evolution info from gen1 to gen2
     if evol_info_gen2[0][11:17] == 'LEVEL':
         evol_info_gen2[0]= '\tdb EV_LEVEL'
     elif evol_info_gen2[0][11:1] == 'TRADE':
@@ -109,7 +72,7 @@ def get_evolution(pokemon_name):
             if evol_info_gen2[0] != '0':
                 evos_moves_lines.insert(i+3,evol_info_gen1)
             
-        out.write(evos_moves_lines[i])    
+	out.write(evos_moves_lines[i])    
         i = i+1    
       
     #print evol_info_gen1    
@@ -251,6 +214,8 @@ def include_sprite(pokemon_name, NUM_POKEMON):
     f.close()
     currentline = 'INCBIN \"pic/' + path2 + pokemon_name +'.pic\"' + ',0,1 ; ' + str(11*height/8) + ', sprite dimensions'
     return currentline;
+
+#not yet used
 def get_move_constants(pokemon_name, lines):    
 
         #open 'move_constants.asm'; create table: moves - hex_id)
