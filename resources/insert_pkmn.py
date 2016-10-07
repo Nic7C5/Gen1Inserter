@@ -1,13 +1,12 @@
 def check_input(pokemon_eingabe):
-    "Checks wether your command line input is a number (e.g. 152 for Chikorita) or you enterde an Pkmn name"
     if pokemon_eingabe.isdigit():
         pokemon_name = name_by_dex(pokemon_eingabe).lower()
         return pokemon_name;
     else:
         pokemon_name = str(pokemon_eingabe).lower() 
-        return pokemon_name;    
+        return pokemon_name;
 def twodigitcheck(string):
-    "Checks wether value only has two digits. There are better ways. this ist from my beginnings as a beginner in programming"
+    "Checks wether value only has two digits"
     if string[0:1] == ' ':
         string = string[1:3]
     return string;
@@ -77,9 +76,10 @@ def get_evolution(pokemon_name):
     if lines[i+1].find('db 0 ; no more evolutions') == -1:
         i = i+1
         #print ('Has evolution')
+		has_evolution = True   #tIf true: prompt to either insert the evolution as well or delete the evolutin data
         evol_info_gen2=lines[i].split(', ')
     else:
-        print ('Has no evolution')
+        #print ('Has no evolution')
         evol_info_gen2 = ['0']
       
     #convert evolution info
@@ -113,7 +113,7 @@ def get_evolution(pokemon_name):
         i = i+1    
       
     #print evol_info_gen1    
-    return evol_info_gen1;
+    return evol_info_gen1, has_evolution;
 def include_sprite(pokemon_name, NUM_POKEMON):
 #hier Abfrage einfuegen pokedex-nr. groesser 151? falls ja nur 'other' als auswahl
     "Include sprite (picture). Write Sprite info. Select palette. Display preview."
