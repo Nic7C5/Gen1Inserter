@@ -1,12 +1,13 @@
 def check_input(pokemon_eingabe):
+    "Checks wether your command line input is a number (e.g. 152 for Chikorita) or you enterde an Pkmn name"
     if pokemon_eingabe.isdigit():
         pokemon_name = name_by_dex(pokemon_eingabe).lower()
         return pokemon_name;
     else:
         pokemon_name = str(pokemon_eingabe).lower() 
-        return pokemon_name;
+        return pokemon_name;    
 def twodigitcheck(string):
-    "Checks wether value only has two digits"
+    "Checks wether value only has two digits. There are better ways. this ist from my beginnings as a beginner in programming"
     if string[0:1] == ' ':
         string = string[1:3]
     return string;
