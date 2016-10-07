@@ -37,7 +37,9 @@ Run the commandline program of your choice - I simply use CMD - and run 'insert_
 
 Then do what you are asked to.
 
-##### Bugs
+##### Bugs/missing features
 * you can reinsert already existing Pokemon.
 * error when handling 'multi evolution' data (e.g. evee)
 * tm/hm and level learnsets not yet implemented
+* pokedex_entries not yet written/converted and included
+* error when not inserting all pokemon of an evolution chain ( rerfering to non existent names)
