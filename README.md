@@ -11,6 +11,7 @@ Insert Pokémon fom Generation 2 (Gold, Silver, Crystal) to 1st Generation (Red,
         git clone https://github.com/Nic7C5/Gen1Inserter
         
 These directories should have been created:
+
 ![](https://dl.dropboxusercontent.com/u/55188886/screen_1.png)
 
 3. You need to install python:
