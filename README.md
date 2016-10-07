@@ -13,9 +13,12 @@ Insert Pokémon fom Generation 2 (Gold, Silver, Crystal) to 1st Generation (Red,
     These directories should have been created in your home directory:
     
     ![](https://dl.dropboxusercontent.com/u/55188886/screen_1.png)    
-    Then renaming folders or moving folders relatively to each other you have to adapt paths in the code
+    Then renaming folders or moving folders relatively to each other, you have to adapt paths in the code
 3. As my program is written in python, you need to have a python interpreter installed on your system. On Windows you're doing this during the installation of Cygwin/Cygwin64. However I have another installed as I faced problems when using *os* features and when trying to install the pack *numpy*. If you are facing similar problems or don't have a python interpreter yet. I reccomend [Anaconda](https://www.continuum.io/downloads), which is available for all platforms for free.
 
 4. Got to '<home>/Gen1Inserter/resources/pic/' and copy the folders 'gmon' and 'gmonback' to '<home>/pokered-gen-II/pic/'.
 
-##### Running 
+##### Running the program
+Run the commandline program of your choice - I simply use CMD - and run 'insert_pkmn.py'.
+
+        
