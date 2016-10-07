@@ -25,6 +25,43 @@ def convert_rgb_values(eingabe):
             liste[i] = int(liste[i])*255/31
     output = tuple(liste)
     return output;	
+#get evolutions and attacks
+def get_attacks(pokemon_name):
+    "get_attacks"
+    m = open('../../pokecrystal/data/evos_attacks.asm', "r")
+    lines = m.readlines()
+    i = 0
+    while i < len(lines):
+        if lines[i].find(pokemon_name.title()+'EvosAttacks:') != -1:
+            #print 'Block of', str(pokemon_name).title(), 'found @ line', str(i+1)
+            #evolutions start in nextline
+            break        
+        i =i+1
+    if lines[i+1].find('db 0 ; no more evolutions') == -1:
+        #Has evolution
+        i = i+3
+    else:
+        #Has no evolution
+        i = i+2
+    attacks=[]
+    j=0
+    while j <=3:
+        next_attack = lines[i+j]
+        if next_attack.find('db 1,') != -1:
+            string = next_attack[7:len(next_attack)-1]
+            print 'Attacks known since level 0:\t' + string
+            attacks.append(string)
+        else:
+            break
+        j = j + 1
+    if str(attacks[-1:]).find('no') != -1:
+        li = len(attacks)-1
+        attacks.pop(li)
+    k = 4 - len(attacks)                
+    while k > 0:
+            attacks.append('0')
+            k = k - 1
+    return attacks;
 def get_evolution(pokemon_name):
     "get_evolution"
     m = open('../../pokecrystal/data/evos_attacks.asm', "r")
@@ -39,7 +76,7 @@ def get_evolution(pokemon_name):
     if lines[i+1].find('db 0 ; no more evolutions') == -1:
         i = i+1
         #print ('Has evolution')
-		has_evolution = True   #tIf true: prompt to either insert the evolution as well or delete the evolutin data...to be programmed
+        has_evolution = True   #tIf true: prompt to either insert the evolution as well or delete the evolutin data...to be programmed
         evol_info_gen2=lines[i].split(', ')
     else:
         #print ('Has no evolution')
@@ -71,11 +108,10 @@ def get_evolution(pokemon_name):
             evos_moves_lines[i+1] = ';'+ pokemon_name.upper() + '\n'
             if evol_info_gen2[0] != '0':
                 evos_moves_lines.insert(i+3,evol_info_gen1)
-            
-	out.write(evos_moves_lines[i])    
+        out.write(evos_moves_lines[i])    
         i = i+1    
       
-    #print evol_info_gen1    
+    #print evol_info_gen1
     return evol_info_gen1, has_evolution;
 def include_sprite(pokemon_name, NUM_POKEMON):
 #hier Abfrage einfuegen pokedex-nr. groesser 151? falls ja nur 'other' als auswahl
