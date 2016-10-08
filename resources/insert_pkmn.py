@@ -1,3 +1,4 @@
+import time
 def check_input(pokemon_eingabe):
     if pokemon_eingabe.isdigit():
         pokemon_name = name_by_dex(pokemon_eingabe).lower()
@@ -17,6 +18,15 @@ def name_by_dex(pokemon_eingabe):
     string = lines[int(pokemon_eingabe)+2][7:len(lines[int(pokemon_eingabe)+2])-1]
     print lines[int(pokemon_eingabe)+2][7:]
     return string;
+def next_evolution_is(pokemon_name):
+    "Returns name of next evolution stage."
+    m = open('../../pokered-gen-II/extras/pokemontools/pokemon_constants.py', "r")
+    lines = m.readlines()
+    for i in range(len(lines)):
+        if lines[i].find(pokemon_name.upper()) != -1:
+            next_stage = lines[i+1][6:-3]
+        i = i+1    
+    return next_stage;
 def convert_rgb_values(eingabe):
     "Convert 2-digit rgb-values (0 to 31) to 3-digit rgb-tuples (0 to 255)"
     liste = list(eingabe)
@@ -62,7 +72,7 @@ def get_attacks(pokemon_name):
             attacks.append('0')
             k = k - 1
     return attacks;
-def get_evolution(pokemon_name):
+def get_evolution(pokemon_name, NUM_POKEMON):
     "get_evolution"
     m = open('../../pokecrystal/data/evos_attacks.asm', "r")
     lines = m.readlines()
@@ -76,7 +86,7 @@ def get_evolution(pokemon_name):
     if lines[i+1].find('db 0 ; no more evolutions') == -1:
         i = i+1
         #print ('Has evolution')
-        has_evolution = True   #tIf true: prompt to either insert the evolution as well or delete the evolutin data...to be programmed
+        #If pokemon has evolution: prompt to either insert the evolution as well or delete the evolution data...to be programmed
         evol_info_gen2=lines[i].split(', ')
     else:
         #print ('Has no evolution')
@@ -112,7 +122,7 @@ def get_evolution(pokemon_name):
         i = i+1    
       
     #print evol_info_gen1
-    return evol_info_gen1, has_evolution;
+    return evol_info_gen1;
 def include_sprite(pokemon_name, NUM_POKEMON):
 #hier Abfrage einfuegen pokedex-nr. groesser 151? falls ja nur 'other' als auswahl
     "Include sprite (picture). Write Sprite info. Select palette. Display preview."
@@ -126,7 +136,7 @@ def include_sprite(pokemon_name, NUM_POKEMON):
     elif version[0] == 'y':
         path2='ymon/'
     else:
-        print 'For using sprites from gold or silver version you need to create the directory \'../../pokered-gen-II/pic/gmon\' and put the sprites there.'
+        #print 'For using sprites from gold or silver version you need to create the directory \'../../pokered-gen-II/pic/gmon\' and put the sprites there.'
         path2='gmon/'
     path1 = '../../pokered-gen-II/pic/'
     path = path1 + path2
@@ -215,8 +225,8 @@ def include_sprite(pokemon_name, NUM_POKEMON):
     print ('Color 1\t\t' + str(convert_rgb_values(light)))
     print ('Color 2\t\t' + str(convert_rgb_values(dark)))
     print ('Darkest:\t' + str(convert_rgb_values(black)))
-    print('\nA preview of your sprite has been shown.\nTo customize your palette, go to:\npokered-gen-II/data/super_palettes.asm and search for ;PAL_' + pokemon_name.upper() + '\n') 
-    rgb.show()
+    #print('\nA preview of your sprite has been shown.\nTo customize your palette, go to:\npokered-gen-II/data/super_palettes.asm and search for ;PAL_' + pokemon_name.upper() + '\n') 
+    #rgb.show()
     #overworld sprites
     f = open("../../pokered-gen-II/data/mon_party_sprites.asm", 'r')
     lines=f.readlines() 
@@ -228,7 +238,7 @@ def include_sprite(pokemon_name, NUM_POKEMON):
         print str(i+1) + '\t' + predefined_sprites[i] + '\n'
     selection = int(raw_input('Select an overworld/party sprite (number):\t'))
     selected_sprite =predefined_sprites[selection-1]
-    print '\nYou selected:\t' + selected_sprite
+    print '\nYou selected:\t' + selected_sprite + '\n'
     i=0
     while i < len(lines)-1:
         f.write(lines[i])
@@ -249,8 +259,28 @@ def include_sprite(pokemon_name, NUM_POKEMON):
     f.write(last_line)
     f.close()
     currentline = 'INCBIN \"pic/' + path2 + pokemon_name +'.pic\"' + ',0,1 ; ' + str(11*height/8) + ', sprite dimensions'
+    #write include to main.asm
+    f = open("../../pokered-gen-II/main.asm", 'r')
+    lines=f.readlines() 
+    f.close()
+    f = open("../../pokered-gen-II/main.asm", 'w')      
+    for i in range(len(lines)):
+        f.write(lines[i])
+    #choose a new bank for all sprites of my insertions
+    if NUM_POKEMON == 152:    #first insertion
+        f.write('\n\nSECTION \"bank30\",ROMX,BANK[$30]\n\n')
+    num_inserted = count_insertions()
+    #20 front + backsprites to bank $30  
+    if num_inserted  < 20:
+        f.write(pokemon_name.title() + 'PicFront::   INCBIN \"pic/gmon/' + pokemon_name.lower() + '.pic\"\n')
+        f.write(pokemon_name.title() + 'PicBack::   INCBIN \"pic/gmonback/' + pokemon_name.lower() + 'b.pic\"\n')
+    #rest of the sprites, overall of 39 insertions > NUM_Pokemon = 190  
+    elif num_inserted < 39:
+        f.write('\n\nSECTION \"bank31\",ROMX,BANK[$30]\n\n')    
+        f.write(pokemon_name.title() + 'PicFront::   INCBIN \"pic/gmon/' + pokemon_name.lower() + '.pic\"\n')
+        f.write(pokemon_name.title() + 'PicBack::   INCBIN \"pic/gmonback/' + pokemon_name.lower() + 'b.pic\"\n')
+    f.close()
     return currentline;
-
 #not yet used
 def get_move_constants(pokemon_name, lines):    
 
@@ -343,10 +373,28 @@ def include(pokemon_name):
         f.write(lines[i])
         i=i+1  
     f.close()
+    #incllude in data/pokedex_order.asm
+    entry = pokemon_name.upper()
+    f = open("../../pokered-gen-II/data/pokedex_order.asm", 'r')
+    lines=f.readlines() 
+    f.close()
+    i= 0
+    while i < len(lines):
+        if lines[i].find('\tdb 0 ; MISSINGNO.') != -1:
+            lines[i]= '\tdb DEX_' + entry + '\n'
+            break
+        i = i + 1
+     
+    f = open("../../pokered-gen-II/data/pokedex_order.asm", 'w')
+    i = 0
+    while i < len(lines) :
+        f.write(lines[i])
+        i=i+1
+    f.close()
     return NUM_POKEMON;
-def c_basestats(pokemon_name):
+def c_basestats(pokemon_name, NUM_POKEMON):
     "This converts the basestats of the crystal disassembly to red-/blue-format"
-    print "So you like to insert " + pokemon_name.title() + '. Let\'s get into it.\n\n'
+    print "\nSo you like to insert " + pokemon_name.title() + '. Let\'s get into it.\n\n'
     path_src = '../../pokecrystal/data/base_stats/'
     extension = '.asm'
     datei =  path_src + pokemon_name + extension
@@ -436,19 +484,51 @@ def c_basestats(pokemon_name):
             i = i+1
         out.write('db BANK('+pokemon_name.title()+'PicFront)')
         return;  
-pokemon_eingabe = raw_input("Which Pokemon do you want du convert?\nEnter name or Dex-#:\t")       
+def prompt_next_evol(evol_info_gen1, pokemon_name):
+    "If the pokemon you inserted has an evolution, you need to insert the next evolution stage as well. This recalls the process for the xext evolution stage."
+    if evol_info_gen1[0] != '0':
+        next_stage = next_evolution_is(pokemon_name)
+        print ('The pokemon you inserted has an evolution. You need to insert the next evolution stage as well. Otherwise the assembly of the rom will face an error.\n\n')
+        print ('Insert ' + next_stage.title() + ' now?\n(Aborting will cause an error, unless you edit \'data/evos_moves.asm\' manually later on.)\n')
+        selection = raw_input("Enter \'yes\' or \'no\':\t")
+        if selection[0] == 'y':
+            pokemon_name = next_stage
+            run(pokemon_name)
+        elif selection[0] == 'Y':
+            pokemon_name = next_stage
+            run(pokemon_name)
+    return;
+def run(pokemon_name):
+    "Load all functions in right order"
+    NUM_POKEMON = include(pokemon_name)
+    c_basestats(pokemon_name, NUM_POKEMON)
+    evol_info_gen1 = get_evolution(pokemon_name, NUM_POKEMON)
+    print '\nYou now have ' + str(NUM_POKEMON) + ' Pokemon in the game.\n'
+    #Is there an evolutin stage to be inserted to make the game function?
+    log(pokemon_name, NUM_POKEMON)
+    prompt_next_evol(evol_info_gen1, pokemon_name)
+    return;
+def log(pokemon_name, NUM_POKEMON):
+    "Write log file to /resources."
+    log = open("log.txt", 'a')
+    log.write(time.strftime("%b %d %Y %H:%M") + '\tPokemon Nr. ' + str(NUM_POKEMON) + ':\t' + pokemon_name.title() + '\thas been inserted\n')
+def close():
+    print '\nClosing in:'
+    for i in range(2,-1,-1):
+        print '\t\t' + str(i+1)
+        time.sleep(1)
+    return;
+def count_insertions():
+    "Determine the Number of inserted pokemon."
+    f = open("../../pokered-gen-II/constants/pokedex_constants.asm", 'r')
+    lines=f.readlines() 
+    num_inserted = len(lines) - 4 - 151
+    return num_inserted;
+pokemon_eingabe = raw_input("Which Pokemon do you want du convert?\nEnter name or Dex-Nr. larger than 151:\t")       
 pokemon_name=check_input(pokemon_eingabe)
-NUM_POKEMON = include(pokemon_name)
-c_basestats(pokemon_name)
-get_evolution(pokemon_name)
-print 'You now have ' + str(NUM_POKEMON) + ' Pokemon in the game.'
-import time 
-print 'Closing in:'
-for i in range(3,-1,-1):
-    print '\t\t' + str(i)
-    time.sleep(1)
+run(pokemon_name)
+close()
 #get_learnset(pokemon_name)
-#write to main asm (picfront...)
-#problem with writing evolution to not yet existent pokemon!
 #pokedex entries + text pokedex
-#cry data....
+#cry data....editor ausprobieren
+#aenderungen in main und home pushen

@@ -68,7 +68,6 @@ ResetStatusAndHalveMoneyOnBlackout::
 
 	ds $149
 
-INCLUDE "data/baseStats/mew.asm"
 
 INCLUDE "engine/battle/safari_zone.asm"
 

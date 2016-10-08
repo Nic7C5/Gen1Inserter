@@ -1,0 +1,25 @@
+ForestMons:
+	db $08
+	IF DEF(_RED)
+		db 4,BAYLEEF
+		db 5,BAYLEEF
+		db 3,BAYLEEF
+		db 5,BAYLEEF
+		db 4,BAYLEEF
+		db 6,BAYLEEF
+		db 4,BAYLEEF
+		db 3,BAYLEEF
+	ENDC
+	IF DEF(_BLUE)
+		db 4,BAYLEEF
+		db 5,BAYLEEF
+		db 3,BAYLEEF
+		db 5,BAYLEEF
+		db 4,BAYLEEF
+		db 6,BAYLEEF
+		db 4,BAYLEEF
+		db 3,BAYLEEF
+	ENDC
+	db 3,BAYLEEF
+	db 5,BAYLEEF
+	db $00

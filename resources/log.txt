@@ -1,0 +1,5 @@
+Oct 09 2016 01:09	Performed complete roll back. All newly added Pokemon were removed
+Oct 09 2016 01:11	Performed complete roll back. All newly added Pokemon were removed
+Oct 09 2016 01:13	Pokemon Nr. 152:	Chikorita	has been inserted
+Oct 09 2016 01:13	Pokemon Nr. 153:	Bayleef	has been inserted
+Oct 09 2016 01:14	Pokemon Nr. 154:	Meganium	has been inserted

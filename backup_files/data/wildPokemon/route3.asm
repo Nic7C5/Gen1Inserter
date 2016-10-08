@@ -1,0 +1,13 @@
+Route3Mons:
+	db $14
+	db 6,MEGANIUM
+	db 5,MEGANIUM
+	db 7,MEGANIUM
+	db 6,MEGANIUM
+	db 7,MEGANIUM
+	db 8,MEGANIUM
+	db 8,MEGANIUM
+	db 3,MEGANIUM
+	db 5,MEGANIUM
+	db 7,MEGANIUM
+	db $00
