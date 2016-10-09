@@ -3,3 +3,4 @@
 *.pydevproject
 test.py
 log.txt
+*.git*
