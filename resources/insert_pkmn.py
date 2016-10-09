@@ -16,7 +16,7 @@ def name_by_dex(pokemon_eingabe):
     m = open('../../pokecrystal/constants/pokemon_constants.asm', "r")
     lines = m.readlines()
     string = lines[int(pokemon_eingabe)+2][7:len(lines[int(pokemon_eingabe)+2])-1]
-    print lines[int(pokemon_eingabe)+2][7:]
+    #print lines[int(pokemon_eingabe)+2][7:]
     return string;
 def next_evolution_is(pokemon_name):
     "Returns name of next evolution stage."
@@ -449,7 +449,7 @@ def c_basestats(pokemon_name, NUM_POKEMON):
         f.close()
         #create output file, write 1st line
         path_target = '../../pokered-gen-II/data/baseStats/'
-        out = open(path_target + pokemon_name + extension, 'w')
+        out = open(path_target + pokemon_name.lower() + extension, 'w')
         pokedex_id = 'DEX_' + pokemon_name.upper()
         currentline = lines_out[0]
         currentline = currentline[:3] + pokedex_id + ' ' + currentline[3:len(currentline)]
@@ -498,15 +498,33 @@ def prompt_next_evol(evol_info_gen1, pokemon_name):
             pokemon_name = next_stage
             run(pokemon_name)
     return;
+def pokemon_already_existing(pokemon_name):
+    f = open("../../pokered-gen-II/constants/pokedex_constants.asm", 'r')
+    lines=f.readlines() 
+    i = 0    
+    while i < len(lines):
+        if lines[i].find(pokemon_name.upper()) != -1:
+            exists = True
+            break
+        else:
+            exists = False
+        
+        i = i+1   
+    return exists;
 def run(pokemon_name):
     "Load all functions in right order"
-    NUM_POKEMON = include(pokemon_name)
-    c_basestats(pokemon_name, NUM_POKEMON)
-    evol_info_gen1 = get_evolution(pokemon_name, NUM_POKEMON)
-    print '\nYou now have ' + str(NUM_POKEMON) + ' Pokemon in the game.\n'
-    #Is there an evolutin stage to be inserted to make the game function?
-    log(pokemon_name, NUM_POKEMON)
-    prompt_next_evol(evol_info_gen1, pokemon_name)
+    exists = pokemon_already_existing(pokemon_name)
+    if exists == True:
+        print( pokemon_name.title() + ' already exists.')
+        close()
+    else:
+        NUM_POKEMON = include(pokemon_name)
+        c_basestats(pokemon_name, NUM_POKEMON)
+        evol_info_gen1 = get_evolution(pokemon_name, NUM_POKEMON)
+        print '\nYou now have ' + str(NUM_POKEMON) + ' Pokemon in the game.\n'
+        #Is there an evolutin stage to be inserted to make the game function?
+        log(pokemon_name, NUM_POKEMON)
+        prompt_next_evol(evol_info_gen1, pokemon_name)
     return;
 def log(pokemon_name, NUM_POKEMON):
     "Write log file to /resources."
@@ -527,8 +545,6 @@ def count_insertions():
 pokemon_eingabe = raw_input("Which Pokemon do you want du convert?\nEnter name or Dex-Nr. larger than 151:\t")       
 pokemon_name=check_input(pokemon_eingabe)
 run(pokemon_name)
-close()
 #get_learnset(pokemon_name)
 #pokedex entries + text pokedex
-#cry data....editor ausprobieren
-#aenderungen in main und home pushen
+#cry data is random
