@@ -550,13 +550,11 @@ def prompt_next_evol(evol_info_gen2, pokemon_name, configs):
                 selection = 'yes'
             else:
                 print ('Insert ' + next_stage.title() + ' now?\n(Aborting will cause an error, unless you edit \'data/evos_moves.asm\' manually later on.)\n')
-                selection = raw_input("Enter \'yes\' or \'no\':\t")
+                selection = raw_input("Enter \'yes\' or \'no\':\t").lower()
             if selection[0] == 'y':
                 pokemon_name = next_stage
                 run(pokemon_name)
-            elif selection[0] == 'Y':
-                pokemon_name = next_stage
-                run(pokemon_name)       
+                close()
     return;
 def pokemon_already_existing(pokemon_name):
     f = open("../../pokered-gen-II/constants/pokedex_constants.asm", 'r')
@@ -589,7 +587,7 @@ def run(pokemon_name):
 def log(pokemon_name, NUM_POKEMON):
     "Write log file to /resources."
     log = open("log.txt", 'a')
-    log.write(time.strftime("%b %d %Y %H:%M") + '\tPokemon Nr. ' + str(NUM_POKEMON) + ':\t' + pokemon_name.title() + '\thas been inserted\n')
+    log.write(time.strftime("%b %d %Y %H:%M") + '\tPokemon Nr. ' + str(NUM_POKEMON) + ':\t' + pokemon_name.title().ljust(10, ' ') + '\thas been inserted\n')
 def close():
     print '\nClosing in:'
     for i in range(2,-1,-1):
@@ -606,7 +604,6 @@ configs = load_config()
 pokemon_eingabe = raw_input("Which Pokemon do you want du convert?\nEnter name or Dex-Nr. larger than 151:\t")       
 pokemon_name=check_input(pokemon_eingabe)
 run(pokemon_name)
-close()
 #get_learnset(pokemon_name)
 #pokedex entries + text pokedex
 #cry data is random
