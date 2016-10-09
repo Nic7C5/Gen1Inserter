@@ -35,10 +35,9 @@ Run the commandline program of your choice - I simply use CMD - and run 'insert_
 ![](https://dl.dropboxusercontent.com/u/55188886/Unbenannt2.PNG)  
 ![](https://dl.dropboxusercontent.com/u/55188886/Unbenannt.PNG)
 
-Then do what you are asked to.
+Then do what you are asked to. After one run, you might have a look at config.txt located in resources. There you canset some options.
 
 ##### Bugs/missing features
-* you can reinsert already existing Pokemon
 * error when handling 'multi evolution' data (e.g. evee)
 * tm/hm and level learnsets not yet implemented
 * pokedex_entries not yet written/converted and included
