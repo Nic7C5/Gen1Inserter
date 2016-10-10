@@ -1,6 +1,12 @@
 # Gen1Inserter
 Insert Pokémon fom Generation 2 (Gold, Silver, Crystal) to 1st Generation (Red, Blue) Pokémon Roms. Based on Danny-E's [version](https://github.com/dannye/pokered-gen-II) of pret's [pokered](https://github.com/pret/pokered) disassembly. The program is written in python 2.
 
+##### Features
+1. Convert base stats (and additional data) of 2nd generation Pokémon to 1st generation format.
+2. Insert front & back sprites (pictures of the monsters)
+3. Choose color scheme of Pokémon from predefined palettes or determine colors  from the picture file.
+
+
 ##### Getting started
 1. Follow all the [steps](https://github.com/pret/pokered/blob/master/INSTALL.md) to assemble (i.e. making a rom file) Pokemon Red/Blue from the pokemon disassembly (I'm using pokered-gen-II by Danny-E and parts of pokecrystal). For Windows there's a video tutorial on [Youtube](https://www.youtube.com/watch?v=fYytG7IUUWg).
 
@@ -35,7 +41,7 @@ Run the commandline program of your choice - I simply use CMD - and run 'insert_
 ![](https://dl.dropboxusercontent.com/u/55188886/Unbenannt2.PNG)  
 ![](https://dl.dropboxusercontent.com/u/55188886/Unbenannt.PNG)
 
-Then do what you are asked to. After one run, you might have a look at 'config.txt' located in '/resources/'. There you canset some options.
+Then do what you are asked to. I recommend to use it "as delivered" once and then have a look at 'config.txt' located in '/resources/'. There you can set some options to customize the program to your own needs. 
 
 ##### Bugs/missing features
 * error handling 'multi branch evolution' data (e.g. Tyrogue)
