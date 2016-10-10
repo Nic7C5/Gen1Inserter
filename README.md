@@ -24,7 +24,7 @@ Insert Pokémon fom Generation 2 (Gold, Silver, Crystal) to 1st Generation (Red,
 
 4. As my program is written in python, you need to have a python interpreter installed on your system. On Windows you're doing this during the installation of Cygwin/Cygwin64. However I have another installed as I faced problems when using *os* features and when trying to install the pack *numpy*. If you are facing similar problems or don't have a python interpreter yet. I reccomend [Anaconda](https://www.continuum.io/downloads), which is available for all platforms for free.
 
-5. Got to '<home>/Gen1Inserter/resources/pic/' and copy the folders 'gmon' and 'gmonback' to '<home>/pokered-gen-II/pic/'.
+5. Go to '<home>/Gen1Inserter/resources/pic/' and copy the folders 'gmon' and 'gmonback' to '<home>/pokered-gen-II/pic/'.
 
 ##### Running the program
 Run the commandline program of your choice - I simply use CMD - and run 'insert_pkmn.py'.
@@ -38,6 +38,6 @@ Run the commandline program of your choice - I simply use CMD - and run 'insert_
 Then do what you are asked to. After one run, you might have a look at 'config.txt' located in '/resources/'. There you canset some options.
 
 ##### Bugs/missing features
-* error when handling 'multi evolution' data (e.g. evee)
+* error handling 'multi branch evolution' data (e.g. Tyrogue)
 * tm/hm and level learnsets not yet implemented
 * pokedex_entries not yet written/converted and included
