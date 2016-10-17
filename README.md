@@ -46,5 +46,5 @@ Then do what you are asked to. I recommend to use it "as delivered" once and the
 ##### Bugs/missing features
 * error handling 'multi branch evolution' data (e.g. Tyrogue)
 * cry data is random
-* {{tm/hm and level learnsets not yet implemented}}
-* {{pokedex_entries not yet written/converted and included}}
+* ~~tm/hm and level learnsets not yet implemented~~
+* ~~pokedex_entries not yet written/converted and included~~
