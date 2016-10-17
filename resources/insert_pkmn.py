@@ -1,23 +1,34 @@
 import time
-class color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+class style:
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
     END = '\033[0m'
+    BOLD = '\033[1m'
+    RED =  '\033[1;31;40m'
+    GREEN =  '\033[1;32;40m'
+    UNDERLINE = '\033[4m'    
+def read_gen_1_moves():
+    f = open('../../pokered-gen-II/constants/move_constants.asm', "r")
+    lines = f.readlines()
+    i = 2
+    moves_gen_1=[]
+    while i <= 165:
+        #move_number = int(lines[i][-3:-1],16)   #number in decimal
+        splitlines = lines[i].split(" ")
+        move =  splitlines[1]   #moves known in Gen 1, string
+        #item = [move_number, move]
+        moves_gen_1.append(move)
+        i+=1        
+    moves_gen_1.append('0')
+    return moves_gen_1;
 def load_config():
     "open resources/config.txt"
     f = open('config.txt', "r")
     lines=f.readlines()
     f.close()
-    option_1 = lines[1].split('=')[1][:-1].title()
-    option_2 = lines[2].split('=')[1][:-1]
-    option_3 = lines[3].split('=')[1][:-1].title()
+    option_1 = lines[3].split('=')[1][:-1].title()
+    option_2 = lines[4].split('=')[1][:-1]
+    option_3 = lines[5].split('=')[1][:-1].title()
     configs =[option_1, option_2, option_3]
     return configs;   
 def check_input(pokemon_eingabe):
@@ -28,7 +39,7 @@ def check_input(pokemon_eingabe):
         pokemon_name = str(pokemon_eingabe).lower() 
         return pokemon_name;
 def twodigitcheck(string):
-    "Checks wether value only has two digits"		#this is from my very beginnings as a beginner...
+    "Checks wether value only has two digits"       #this is from my very beginnings as a beginner...
     if string[0:1] == ' ':
         string = string[1:3]
     return string;
@@ -39,6 +50,14 @@ def name_by_dex(pokemon_eingabe):
     string = lines[int(pokemon_eingabe)+2][7:len(lines[int(pokemon_eingabe)+2])-1]
     #print lines[int(pokemon_eingabe)+2][7:]
     return string;
+def dex_by_name(pokemon_name):
+    m = open('../../pokered-gen-II/extras/pokemontools/pokemon_constants.py', "r")
+    lines = m.readlines()
+    for i in range(len(lines)):
+        if lines[i].find(pokemon_name.upper()) != -1:
+            dex = i-2
+            break
+    return dex;
 def next_evolution_is(pokemon_name):
     "Returns name of next evolution stage."
     m = open('../../pokered-gen-II/extras/pokemontools/pokemon_constants.py', "r")
@@ -55,7 +74,7 @@ def convert_rgb_values(eingabe):
         if int(liste[i]) != 0:
             liste[i] = int(liste[i])*255/31
     output = tuple(liste)
-    return output;	
+    return output;  
 #get evolutions and attacks
 def convert_rgb_values_r(eingabe):
     "Convert 3-digit rgb-tuples (0 to 255) to 2-digit rgb-tuples (0 to 31)"
@@ -65,8 +84,8 @@ def convert_rgb_values_r(eingabe):
             liste[i] = int(liste[i])*31/255
     output = tuple(liste)
     return output;
-def get_attacks(pokemon_name):
-    "get_attacks"
+def get_level_0_attacks(pokemon_name):
+    "get_level_0_attacks"
     m = open('../../pokecrystal/data/evos_attacks.asm', "r")
     lines = m.readlines()
     i = 0
@@ -84,11 +103,12 @@ def get_attacks(pokemon_name):
         i = i+2
     attacks=[]
     j=0
+    print (style.UNDERLINE  + 'Moves known since level 0:' + style.END)  
     while j <=3:
         next_attack = lines[i+j]
         if next_attack.find('db 1,') != -1:
             string = next_attack[7:len(next_attack)-1]
-            print 'Attacks known since level 0:\t' + string
+            print string.title()
             attacks.append(string)
         else:
             break
@@ -96,15 +116,29 @@ def get_attacks(pokemon_name):
     if str(attacks[-1:]).find('no') != -1:
         li = len(attacks)-1
         attacks.pop(li)
+    
+    #append zeros to have the four entries needed
     k = 4 - len(attacks)                
     while k > 0:
             attacks.append('0')
             k = k - 1
+    moves_gen_1 = read_gen_1_moves() #type: list format: ['MOVE']
+    
+    #replace gen_2 moves with zeros
+    for i in range(4):
+        if attacks[i] in moves_gen_1:
+            i+=1
+        else:
+            print '\n(The attack ' + style.RED + attacks[i].title() + ' will be removed ' + style.END + 'as it doesn\'t exist in 1st generation games.)'     
+            attacks.pop(i)
+            attacks.append('0')
+             
     return attacks;
-def get_evolution(pokemon_name, NUM_POKEMON):
-    "get_evolution"
+def write_evolutions_and_moveset(pokemon_name, NUM_POKEMON, moveset):
+    "get+write evolutions + write level up moveset"
     m = open('../../pokecrystal/data/evos_attacks.asm', "r")
     lines = m.readlines()
+    m.close()
     i = 0
     while i < len(lines):
         if lines[i].find(pokemon_name.title()+'EvosAttacks:') != -1:
@@ -115,10 +149,10 @@ def get_evolution(pokemon_name, NUM_POKEMON):
         
         #If pokemon has evolution: prompt to either insert the evolution as well or delete the evolution data
         evol_info_gen2=lines[i].split(', ')
-        print ('\n'+ pokemon_name.title() + ' evolves to ' + evol_info_gen2[2][:-1].title() +'.' )
+        print ('\n'+ style.GREEN + pokemon_name.title() + style.END  + ' evolves to ' + style.GREEN + evol_info_gen2[2][:-1].title() + style.END  +'.' )
         
     else:
-        print (pokemon_name.title() + ' has no evolution.')
+        print ('\n'+style.GREEN + pokemon_name.title() + style.END + ' has no evolution.')
         evol_info_gen2 = ['0']
 
     #convert evolution info from gen1 to gen2                           
@@ -142,15 +176,84 @@ def get_evolution(pokemon_name, NUM_POKEMON):
     n.close()
     mon = NUM_POKEMON
     i = 0
-    out = open("../../pokered-gen-II/data/evos_moves_n.asm", 'w')
+
+    out = open("../../pokered-gen-II/data/evos_moves.asm", 'w')
+    #copy/re-write the whole file + insert some lines
+
+    
     while i < len(evos_moves_lines):
         if evos_moves_lines[i].find('Mon'+str(mon)+'_EvosMoves:') != -1:
-            evos_moves_lines[i+1] = ';'+ pokemon_name.upper() + '\n'
-            if evol_info_gen2[0] != '0':
-                evos_moves_lines.insert(i+3,evol_info_gen1)
-        out.write(evos_moves_lines[i])    
-        i = i+1    
+            break  
+        i+=1
+    i+=1
+    evos_moves_lines[i+1] = ';'+ pokemon_name.upper() + '\n'
+    i+=2
+    if evol_info_gen2[0] != '0':
+                evos_moves_lines.insert(i,evol_info_gen1)
+    i+=3
+    print ('\n')
+    print (style.UNDERLINE  + 'Level up moves:' + style.END)  
+    
+    #remove gen_2 moves 
+    moves_gen_1 = read_gen_1_moves() #type: list format: ['MOVE']  
+    moveset_gen_1 = []
+    for k in range(len(moveset)):
+        if moveset[k][1] in moves_gen_1:
+            moveset_gen_1.append(moveset[k])
+    moveset_gen_1=moveset_gen_1[::-1]    
+
+   
+    
+    for j in range(len(moveset_gen_1)):
+            insert='\tdb ' + str(moveset_gen_1[j][0]) + ',' +  str(moveset_gen_1[j][1]+'\n')
+            print ('Level:\t' + str(moveset_gen_1[j][0]).title() + '\t Move:\t' + str(moveset_gen_1[j][1]).title())
+            evos_moves_lines.insert(i,insert)
+    #print '\n(' + style.RED + str(removed) + ' attacks were removed from the learnset ' + style.END + 'as they doen\'t exist in 1st generation games.)'       
+    print '\n(' + style.RED + 'Attacks were removed from the learnset ' + style.END + 'as they doen\'t exist in 1st generation games.)'     
+      
+    
+    for k in range(len(evos_moves_lines)):
+        out.write(evos_moves_lines[k])
+    
+                
+                
     return evol_info_gen2;
+def get_moveset(pokemon_name):
+    "Find out which move is learnt at which level."
+    m = open('../../pokecrystal/data/evos_attacks.asm', "r")
+    lines = m.readlines()
+    m.close()
+    i=0
+    while i < len(lines):
+        if lines[i].find(pokemon_name.title()+'EvosAttacks:') != -1:
+            break  
+        i=i+1
+    i=i+1
+    while i < len(lines):
+        if lines[i].find('db 0 ; no more evolutions') != -1:
+            break
+        i=i+1
+    i=i+1
+    while i < len(lines):
+        if lines[i].find('db 1,') == -1:
+            break 
+        i=i+1
+    #first level_up_move in line[i]
+    moveset = []    #type: list (of lists) format: [[level, move], [], ...]
+    while i < len(lines):
+        
+        if lines[i].find('no more level-up moves') != -1:
+            break  
+        if lines[i][0:3] != "\tdb":
+            print lines[i]
+        else:
+            splitline=lines[i].split(" ")
+            level =  splitline[1][:-1] 
+            move =  splitline[2][:-1]
+            moveset.append([level, move])
+        i=i+1
+         
+    return moveset;
 def include_sprite(pokemon_name, NUM_POKEMON):
 #hier Abfrage einfuegen pokedex-nr. groesser 151? falls ja nur 'other' als auswahl
     "Include sprite (picture). Write Sprite info. Select palette. Display preview."
@@ -191,12 +294,14 @@ def include_sprite(pokemon_name, NUM_POKEMON):
         unsorted_palette.append([length[i], old_palette[i][1]])
         i = i +1
     palette = sorted(unsorted_palette, reverse=True)
-    if configs[1] == 'pal':
+
+    if configs[1].lower() == 'pal':
         select_method = 'pal'
-    elif configs[1] == 'det':
+    elif configs[1].lower() == 'det':
         select_method = 'det'
-    elif configs[1] == 'ask':
-        select_method = raw_input('Do you want to use a predefined palette or determine the colors of the sprite-file (exactly 4 different colors)?\nType ' + color.BOLD + color.UNDERLINE + 'pre' + color.END + ' or ' + color.BOLD + color.UNDERLINE + 'det' + color.END + ' (first letter is sufficient):\t').lower()
+    else:
+        select_method = raw_input('Do you want to use a predefined palette or determine the colors of the sprite-file (exactly 4 different colors)?\nType ' + style.BOLD + 'pre' + style.END + ' or ' + style.BOLD + 'det' + style.END + ' (first letter is sufficient):\t').lower()
+
     f = open('../../pokered-gen-II/data/super_palettes.asm', "r")
     lines = f.readlines()    
     if select_method[0] == 'p':
@@ -267,13 +372,16 @@ def include_sprite(pokemon_name, NUM_POKEMON):
             else:
                 rgb.putpixel((x, y), convert_rgb_values(black))
             x += 1 
-        y += 1       
+        y += 1 
+    print (style.UNDERLINE  + 'Colors' + style.END)      
     print ('Lightest:\t' + str(convert_rgb_values(white)))
     print ('Color 1\t\t' + str(convert_rgb_values(light)))
     print ('Color 2\t\t' + str(convert_rgb_values(dark)))
     print ('Darkest:\t' + str(convert_rgb_values(black)))
     if configs[2] == 'True':
-        print('\nA preview of your sprite has been shown.\nTo customize your palette, go to:\npokered-gen-II/data/super_palettes.asm and search for ;PAL_' + pokemon_name.upper() + '\n')
+
+        print('\nA preview of your sprite has been shown.\nTo edit your palette, go to:\npokered-gen-II/data/super_palettes.asm and search for ;PAL_' + pokemon_name.upper() + '\n')
+
         rgb.show()
     #overworld sprites
     f = open("../../pokered-gen-II/data/mon_party_sprites.asm", 'r')
@@ -282,9 +390,11 @@ def include_sprite(pokemon_name, NUM_POKEMON):
     f = open("../../pokered-gen-II/data/mon_party_sprites.asm", 'w')    
     predefined_sprites =['Grass', 'Mon', 'Bug', 'Water', 'Snake', 'Fairy', 'Bird_M', 'Quadruped', 'Ball', 'Helix' ]   
     i=0
+    print('\n')
+    print (style.UNDERLINE  + 'Overworld Sprite' + style.END)  
     for i in range(len(predefined_sprites)):
         print str(i+1) + '\t' + predefined_sprites[i] + '\n'
-    selection = int(raw_input('Select an overworld/party sprite (number):\t'))
+    selection = int(raw_input('Select an overworld/party menu sprite (number):\t'))
     selected_sprite =predefined_sprites[selection-1]
     print '\nYou selected:\t' + selected_sprite + '\n'
     i=0
@@ -330,24 +440,56 @@ def include_sprite(pokemon_name, NUM_POKEMON):
     f.close()
     return currentline;
 #not yet used
-def get_move_constants(pokemon_name, lines):    
-
-        #open 'move_constants.asm'; create table: moves - hex_id)
-        m = open('../../pokecrystal/constants/move_constants.asm', "r")
-        lines = m.readlines()
-        i = 3
-        move_table=[['move_name','move_id']]
-        while i <= 253:
-            currentline = lines[i]
-            move_name = currentline[7:19]
-            move_id = currentline[23:25]
-            print move_name + '\t' + move_id
-            i = i + 1
-        move_table.pop(0)    
-        m.close()        
-        return;
-def dex_entry(pokemon_name):#noch schreiben
-    "Description"
+def dex_entry(pokemon_name):
+    dex = dex_by_name(pokemon_name) #int
+    dex = str(dex).rjust(3, "0")
+    #read the daty from pokecrystal
+    m = open('../../pokecrystal/data/pokedex/entries/' + dex + '.asm', "r")
+    lines = m.readlines()
+    m.close()
+    #write the description to pokedex.asm
+    m = open('../../pokered-gen-II/text/pokedex.asm', 'a')
+   
+    text = lines[4:]
+    text[0]='\ttext \"' +text[0].split('\"')[1] +'\"\n'
+    species_name=lines[1].split(';')[0]
+    
+    import re
+    height = re.split(' |,|\*',lines[2])[1]
+    height = height[:len(height)-2] + ',' + height[len(height)-2:]
+    weight = re.split(' |,|\*',lines[2])[3]
+       
+    m.write('_'+pokemon_name.title() + 'DexEntry::\n')
+    for i in range(len(text)):
+        if i == 3:
+            m.write('\n')
+        m.write(text[i])
+    m.write('\n')
+    m.close
+    
+    #write the description to pokedex_entries.asm
+    m = open('../../pokered-gen-II/data/pokedex_entries.asm', 'r')
+    lines = m.readlines()
+    i= 0
+    #replace missingno pointer at right spot with new pokemon
+    while i < len(lines):
+        if lines[i].find('\tdw MissingNoDexEntry') != -1:
+            lines[i]= '\tdw ' + pokemon_name.title() + 'DexEntry\n'
+            break
+        i = i + 1
+    
+    #copy file with the above edit 
+    m = open('../../pokered-gen-II/data/pokedex_entries.asm', 'w')   
+    for i in range(len(lines)):
+        m.write(lines[i])
+                 
+    #continue writing new entry (write species name, weight, height)
+    m.write('\n\n' + pokemon_name.title() + 'DexEntry:\n')
+    m.write(species_name+'\n')
+    m.write('\tdb ' + height+'\n')
+    m.write('\tdw ' + weight+'\n')
+    m.write('\tTX_FAR_' + pokemon_name.title() + 'DexEntry\n')
+    m.write('\tdb "@"')
     return;
 def include(pokemon_name):
     "After data has been evaluated/converted etc., this includes it in certain files."
@@ -442,7 +584,9 @@ def include(pokemon_name):
     return NUM_POKEMON;
 def c_basestats(pokemon_name, NUM_POKEMON):
     "This converts the basestats of the crystal disassembly to red-/blue-format"
-    print "\nSo you like to insert " + color.RED + pokemon_name.title() + color.END + '. Let\'s get into it.\n'
+
+    print "\nSo you like to insert " + style.GREEN + pokemon_name.title() + style.END + '. Let\'s get into it.\n'
+
     path_src = '../../pokecrystal/data/base_stats/'
     extension = '.asm'
     datei =  path_src + pokemon_name + extension
@@ -458,9 +602,10 @@ def c_basestats(pokemon_name, NUM_POKEMON):
         #print'Read',len(lines), "lines of", datei, '\n'
         # copy basestats (found in line 3)
         line_3 = lines[3-1]
-        basestats_leg=['hp', 'atk', 'def', 'spd', 'sat', 'sdf']
+        basestats_leg=['HP', 'ATK', 'DEF', 'SPEED', 'SATK', 'SDEF']
         i = 0
         #get values
+        print(style.UNDERLINE + 'Base Stats' + style.END)
         value=['Values of basestats:']
         while i <= len(basestats_leg) - 1:
             x = 4 + i * 5
@@ -520,7 +665,7 @@ def c_basestats(pokemon_name, NUM_POKEMON):
         print '\n\n'
         out.write(include_sprite(pokemon_name, NUM_POKEMON)+'\ndw ' + pokemon_name.title() + 'PicFront\ndw ' + pokemon_name.title() + 'PicBack\n')
         #write attacks known from level 0
-        attacks = get_attacks(pokemon_name)
+        attacks = get_level_0_attacks(pokemon_name)              
         out.write('; attacks known at lvl 0\n')
         for i in range(4):
             out.write('db ' + attacks[i] + '\n')
@@ -543,10 +688,12 @@ def prompt_next_evol(evol_info_gen2, pokemon_name, configs):
         next_stage = evol_info_gen2[2][:-1]
         exists = pokemon_already_existing(next_stage)
         if exists == True:
-            close()
+
+            print(next_stage.title() + ' already exists.')
         else:
             print ('The pokemon you inserted has an evolution, that hasn\'t yet been inserted. You need to insert the next evolution stage as well. Otherwise the assembly of the rom will face an error.\n\n')
-            if configs[0] == 'True':
+            if configs[0].title() == 'True':
+
                 selection = 'yes'
             else:
                 print ('Insert ' + next_stage.title() + ' now?\n(Aborting will cause an error, unless you edit \'data/evos_moves.asm\' manually later on.)\n')
@@ -554,7 +701,8 @@ def prompt_next_evol(evol_info_gen2, pokemon_name, configs):
             if selection[0] == 'y':
                 pokemon_name = next_stage
                 run(pokemon_name)
-                close()
+                #close()
+
     return;
 def pokemon_already_existing(pokemon_name):
     f = open("../../pokered-gen-II/constants/pokedex_constants.asm", 'r')
@@ -574,23 +722,28 @@ def run(pokemon_name):
     exists = pokemon_already_existing(pokemon_name)
     if exists == True:
         print( pokemon_name.title() + ' already exists.')
-        close()
+        
     else:
         NUM_POKEMON = include(pokemon_name)
+        moveset = get_moveset(pokemon_name)
         c_basestats(pokemon_name, NUM_POKEMON)
-        evol_info_gen1 = get_evolution(pokemon_name, NUM_POKEMON)
+        evol_info_gen1 = write_evolutions_and_moveset(pokemon_name, NUM_POKEMON, moveset)
+        dex_entry(pokemon_name)
         print '\nYou now have ' + str(NUM_POKEMON) + ' Pokemon in the game.\n'
         #Is there an evolutin stage to be inserted to make the game function?
         log(pokemon_name, NUM_POKEMON)
         prompt_next_evol(evol_info_gen1, pokemon_name, configs)
+        
     return;
+
 def log(pokemon_name, NUM_POKEMON):
     "Write log file to /resources."
     log = open("log.txt", 'a')
     log.write(time.strftime("%b %d %Y %H:%M") + '\tPokemon Nr. ' + str(NUM_POKEMON) + ':\t' + pokemon_name.title().ljust(10, ' ') + '\thas been inserted\n')
 def close():
     print '\nClosing in:'
-    for i in range(2,-1,-1):
+    seconds_to_close = 5
+    for i in range( seconds_to_close-1,-1,-1):
         print '\t\t' + str(i+1)
         time.sleep(1)
     return;
@@ -604,6 +757,5 @@ configs = load_config()
 pokemon_eingabe = raw_input("Which Pokemon do you want du convert?\nEnter name or Dex-Nr. larger than 151:\t")       
 pokemon_name=check_input(pokemon_eingabe)
 run(pokemon_name)
-#get_learnset(pokemon_name)
-#pokedex entries + text pokedex
+close()
 #cry data is random
