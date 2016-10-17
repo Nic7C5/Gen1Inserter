@@ -1,5 +1,8 @@
 CONFIG
-Evolutions:		Automatically prompt insertion of further evolution stages, that havn't yet been inserted [True|False]=true
-Colors:			  Choose from predefined color palette (pal) or let the programm determine (det) the colors from 4-color-png-files or ask me each time [pal|det|ask]=det
-Sprites:			Show preview[True|False]=false
+__________________________________________________________________________________________________________________________________________
 
+Evolutions:		Automatically prompt insertion of further evolution stages, that havn't yet been inserted [True|False]=true
+Colors:			Choose from predefined color palette (pal) or let the programm determine (det) the colors from 4-color-png-files or ask me each time [pal|det|ask]=det
+Sprites:			Show preview[True|False]=false
+__________________________________________________________________________________________________________________________________________
+EOF
